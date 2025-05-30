@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "OCR Screenshot Tool",
+  "version": "1.0",
+  "description": "Capture screen areas and extract text using OCR",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "OCR Screenshot Tool"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["result.html", "result.js", "result.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
