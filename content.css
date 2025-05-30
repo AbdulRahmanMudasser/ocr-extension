@@ -1,0 +1,42 @@
+/* OCR Screenshot Tool - Content Styles */
+
+.screenshot-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    z-index: 999999 !important;
+    cursor: crosshair !important;
+    user-select: none !important;
+}
+
+.selection-box {
+    position: absolute !important;
+    border: 2px solid #007acc !important;
+    background: rgba(0, 122, 204, 0.1) !important;
+    display: none !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
+    pointer-events: none !important;
+}
+
+.selection-box::before {
+    content: '' !important;
+    position: absolute !important;
+    top: -1px !important;
+    left: -1px !important;
+    right: -1px !important;
+    bottom: -1px !important;
+    border: 1px solid rgba(0, 122, 204, 0.5) !important;
+    border-radius: 1px !important;
+}
+
+/* Ensure the overlay appears above everything */
+.screenshot-overlay * {
+    pointer-events: none !important;
+}
+
+.screenshot-overlay {
+    pointer-events: auto !important;
+}
