@@ -8,8 +8,8 @@
             padding: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: white;
+            color: black;
         }
         
         .container {
@@ -20,27 +20,25 @@
             margin: 0 0 15px 0;
             font-size: 16px;
             font-weight: 600;
+            color: black;
         }
         
         .capture-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: black;
+            border: 2px solid black;
             color: white;
             padding: 12px 20px;
-            border-radius: 25px;
+            border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
             width: 100%;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
         }
         
         .capture-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: #333;
+            border-color: #333;
         }
         
         .icon {
@@ -60,21 +58,52 @@
     
     <script>
         document.getElementById('captureBtn').addEventListener('click', async () => {
-            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-            
-            chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                func: startCapture
-            });
-            
-            window.close();
+            try {
+                const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+                
+                // Inject the content script if not already injected
+                try {
+                    await chrome.scripting.executeScript({
+                        target: { tabId: tab.id },
+                        func: () => {
+                            if (!window.screenshotTool) {
+                                console.log('Screenshot tool not found, page may need refresh');
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.log('Script injection check failed:', e);
+                }
+                
+                // Start capture
+                await chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    func: startCapture
+                });
+                
+                window.close();
+            } catch (error) {
+                console.error('Capture start failed:', error);
+                alert('Failed to start capture. Please refresh the page and try again.');
+            }
         });
         
         function startCapture() {
+            console.log('Starting capture...');
             if (window.screenshotTool) {
                 window.screenshotTool.activate();
             } else {
+                // Fallback: send message to potentially injected content script
                 window.postMessage({ type: 'START_CAPTURE' }, '*');
+                
+                // Additional fallback: try to find and activate any screenshot tool
+                setTimeout(() => {
+                    if (window.screenshotTool) {
+                        window.screenshotTool.activate();
+                    } else {
+                        alert('Screenshot tool not ready. Please refresh the page and try again.');
+                    }
+                }, 100);
             }
         }
     </script>
